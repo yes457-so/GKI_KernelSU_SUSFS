@@ -455,8 +455,8 @@ jobs:
           cd $KERNEL_ROOT/common
           patch -p1 --fuzz=3 < 50_add_susfs_in_gki-${{ inputs.android_version }}-${{ inputs.kernel_version }}.patch || true
 
-          # 应用版本特定修复 (Next 变体)
-          if [ "${{ inputs.ksu_variant }}" == "Next" ]; then
+          # 应用版本特定修复 (Next/SukiSU 变体)
+          if [ "${{ inputs.ksu_variant }}" == "Next" ] || [ "${{ inputs.ksu_variant }}" == "SukiSU" ]; then
             CURRENT_SUB="${{ inputs.sub_level }}"
             [[ ! "$CURRENT_SUB" =~ ^[0-9]+$ ]] && CURRENT_SUB=99999
 
@@ -502,29 +502,6 @@ jobs:
             if [[ "${{ inputs.android_version }}" == "android15" && "${{ inputs.kernel_version }}" == "6.6" ]]; then
               [[ "$CURRENT_SUB" -ge 98 ]] && { cp $KERNEL_PATCHES/wild/susfs_fix_patches/v${SUSFS_VERSION}/a15-6.6/base.c.patch ./; patch -p1 < base.c.patch || true; }
               [[ "$CURRENT_SUB" -le 58 ]] && { cp $KERNEL_PATCHES/wild/susfs_fix_patches/v${SUSFS_VERSION}/a15-6.6/task_mmu.c.patch ./; patch -p1 < task_mmu.c.patch || true; }
-            fi
-          fi
-
-      # ==================== 应用额外修复 ====================
-      # 非 Next 变体的额外兼容性修复
-      - name: 应用额外修复
-        if: inputs.enable_susfs && inputs.ksu_variant != 'Next'
-        working-directory: ${{ env.KERNEL_ROOT }}/common
-        run: |
-          FORMATTED_BRANCH="${{ inputs.android_version }}-${{ inputs.kernel_version }}"
-
-          # Android 15-6.6 修复
-          if [ "$FORMATTED_BRANCH" = "android15-6.6" ]; then
-            if ! grep -qxF $'\tunsigned int nr_subpages = __PAGE_SIZE / PAGE_SIZE;' ./fs/proc/task_mmu.c; then
-              sed -i -e '/int ret = 0, copied = 0;/a \\tunsigned int nr_subpages \= __PAGE_SIZE \/ PAGE_SIZE;' \
-                     -e '/int ret = 0, copied = 0;/a \\tpagemap_entry_t \*res = NULL;' ./fs/proc/task_mmu.c
-            fi
-          fi
-
-          # 旧版 5.x 内核修复
-          if [ "$FORMATTED_BRANCH" = "android12-5.10" ] || [ "$FORMATTED_BRANCH" = "android13-5.10" ] || [ "$FORMATTED_BRANCH" = "android13-5.15" ]; then
-            if grep -qxF $'\t\tgoto show_pad;' ./fs/proc/task_mmu.c; then
-              sed -i -e 's/goto show_pad;/return 0;/' ./fs/proc/task_mmu.c
             fi
           fi
 

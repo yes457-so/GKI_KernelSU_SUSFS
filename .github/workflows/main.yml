@@ -370,7 +370,13 @@ jobs:
       # 根据 SUSFS 版本生成递增的发布标签
       - name: 生成版本标签
         run: |
-          SUS_VERSION=${{ needs.get-manager.outputs.susVer }}
+          # 获取 SUSFS 版本，如果 get-manager 被跳过则使用默认值
+          SUS_VERSION="${{ needs.get-manager.outputs.susVer }}"
+          if [ -z "$SUS_VERSION" ]; then
+            echo "警告: 未获取到 SUSFS 版本，使用默认版本号"
+            SUS_VERSION="1.0.0"
+          fi
+
           LATEST_TAG=$(gh api repos/$REPO_OWNER/$REPO_NAME/tags --jq '.[0].name' 2>/dev/null | sed 's/-.*//' || echo "")
 
           if [ "$SUS_VERSION" = "$LATEST_TAG" ]; then
@@ -382,7 +388,7 @@ jobs:
           NEW_TAG=$(echo "$LATEST_TAG" | awk -F'-r' '{suffix=$2; if (!suffix) suffix=0; suffix++; printf "%s-r%d", $1, suffix}')
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
 
-          git tag $NEW_TAG
+          git tag "$NEW_TAG"
           git push --tags
 
       # ==================== 下载构建产物 ====================

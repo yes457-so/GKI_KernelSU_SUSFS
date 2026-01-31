@@ -1,4 +1,4 @@
-name: Kernel Config - A14 6.1
+name: 内核构建 - Android 14 (6.1)
 
 permissions:
   contents: write
@@ -28,10 +28,6 @@ on:
         default: Stable(标准)
       version:
         description: '自定义版本名(如6.1.93后面的字符/留空则使用默认版本号)'
-        required: false
-        type: string
-      build_time:
-        description: '设置内核构建时间(格式见仓库说明)'
         required: false
         type: string
       use_zram:
@@ -73,9 +69,6 @@ on:
         required: true
         type: string
       version:
-        required: false
-        type: string
-      build_time:
         required: false
         type: string
       use_zram:
@@ -136,7 +129,6 @@ jobs:
       use_kpm: ${{ inputs.use_kpm }}
       supp_op: false
       only_ak3: ${{ inputs.onlyAk3 || false }}
-      build_time: ${{ inputs.build_time || '' }}
       enable_susfs: ${{ !inputs.cancel_susfs }}
 
   get-ksu-manager:

@@ -1,4 +1,4 @@
-name: Kernel Config - A15 6.6
+name: 内核构建 - Android 15 (6.6)
 
 permissions:
   contents: write
@@ -28,10 +28,6 @@ on:
         default: Stable(标准)
       version:
         description: '自定义版本名(如位于6.6.77-android15-8<自定义版本名>/留空则使用默认版本号)'
-        required: false
-        type: string
-      build_time:
-        description: '设置内核构建时间(格式见仓库说明)'
         required: false
         type: string
       use_zram:
@@ -78,9 +74,6 @@ on:
         required: true
         type: string
       version:
-        required: false
-        type: string
-      build_time:
         required: false
         type: string
       use_zram:
@@ -140,7 +133,6 @@ jobs:
       use_kpm: ${{ inputs.use_kpm }}
       supp_op: ${{ inputs.supp_op || false }}
       only_ak3: ${{ inputs.onlyAk3 || false }}
-      build_time: ${{ inputs.build_time || '' }}
       enable_susfs: ${{ !inputs.cancel_susfs }}
 
   get-ksu-manager:

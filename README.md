@@ -75,6 +75,7 @@ Wiki 涵盖内容：
 - ⏰ 内核构建时间说明
 - 🆘 紧急救援指南
 - 📊 内核版本兼容性说明
+- **🔧 [Fork 与自定义编译指南](https://github.com/zzh20188/GKI_KernelSU_SUSFS/wiki/Fork%E4%B8%8E%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BC%96%E8%AF%91%E6%8C%87%E5%8D%97)** - 学习如何 Fork 仓库并编译自己的内核
 
 ---
 
